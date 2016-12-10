@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title>Spring Boot:: Demos:: KeyCloak</title>
+  <meta name="description" content=""/>
+  <meta name="viewport" content="width=device-width"/>
+  <base href="/"/>
+  <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+  <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+
+  <!-- simple controller -->
+  <script type="text/javascript">
+
+        angular.module("app",[]).controller("home", function($http,$location) {
+            var self = this;
+
+            $http.post("/user").success(function(data){
+                self.user = data.userAuthentication.details.name;
+                self.authenticated=true;
+            }).error(function(data) {
+                self.user = "N.A";
+                self.authenticated=false;
+            });
+
+            self.logout = function(){
+                $http.post('/logout',{}).success(function() {
+                    self.authenticated = false;
+                    $location.path("/");
+                }).error(function(data) {
+                console.log("Logout failed");
+                self.authenticated= false;
+                });
+            };
+        });
+  </script>
+</head>
+
+<body ng-app="app" ng-controller="home as home">
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Spring Boot:: Demos:: KeyCloak</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <form class="navbar-form navbar-right" ng-show="!home.authenticated">
+        <a href="/login" class="btn btn-info btn-sm">
+          <span class="glyphicon glyphicon-log-in"></span> Log in
+        </a>
+      </form>
+      <p class="navbar-text navbar-right" ng-show="home.authenticated">
+        <a href="#" ng-click="home.logout()" class="btn btn-info btn-sm">
+          <span class="glyphicon glyphicon-log-out"></span> Log out
+        </a>
+    </div><!--/.navbar-collapse -->
+  </div>
+</nav> l
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1 ng-show="!home.authenticated">Hello!</h1>
+    <h1 ng-show="home.authenticated">Hello <span ng-bind="home.user"></span>!</h1>
+    <p>This is a simple demo application to show case how to integrate <a href="http://www.keycloak.org/">Keycloak</a>
+      with Spring Boot and OAuth2. This application
+      is more of porting the existing <a href="https://spring.io/guides/tutorials/spring-boot-oauth2/">spring-boot-oauth2</a>
+      replacing the auth provider as <a href="http://www.keycloak.org/">Keycloak</a> instead of Facebook/Github
+    </p>
+    <p>The source code of this demo is available at <a href="https://github.com/kameshsampath/springboot-keycloak-demo" target="_blank">Github</a>
+    </p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <h2>fabric8</h2>
+      <p>fabric8 is an opinionated and open source Integrated Developer Platform for the Continuous Delivery of
+        Microservices using Kubernetes and Jenkins
+      </p>
+      <p><a class="btn btn-default" href="https://fabric8.io/" target="_blank"
+            role="button">View
+        details &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>Spring Security OAuth</h2>
+      <p>Spring Security OAuth provides support for using Spring Security with OAuth (1a) and OAuth2 using standard
+        Spring and Spring Security programming models and configuration idioms</p>
+      <p><a class="btn btn-default" href="http://projects.spring.io/spring-security-oauth/" target="_blank"
+            role="button">View
+        details &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>Keycloak</h2>
+      <p>Keycloak is an open source Identity and Access Management solution aimed at modern applications and services.
+        It makes it easy to secure applications and services with little to no code</p>
+      <p><a class="btn btn-default" href="http://www.keycloak.org/" target="_blank" role="button">View
+        details &raquo;</a></p>
+    </div>
+  </div>
+  <hr>
+</div> <!-- /container -->
+</body>
+</html>

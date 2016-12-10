@@ -1,0 +1,19 @@
+root = true
+
+[*]
+trim_trailing_whitespace = true
+end_of_line = lf
+insert_final_newline = true
+
+[*.{yaml,json,xml,html}]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+[*.java]
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab

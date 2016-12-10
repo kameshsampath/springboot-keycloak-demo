@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  application.yml: |
+    security:
+      oauth2:
+        client:
+          clientId: "${CLIENT_ID}"
+          clientSecret: "${CLIENT_SECRET}"
+          accessTokenUri: http://localhost:8180/auth/realms/springboot/protocol/openid-connect/token
+          userAuthorizationUri: http://localhost:8180/auth/realms/springboot/protocol/openid-connect/auth
+          authenticationScheme: header
+          clientAuthenticationScheme: header
+        resource:
+          userInfoUri: http://localhost:8180/auth/realms/springboot/protocol/openid-connect/userinfo
+    logging:
+      level:
+        org.springframework.security: DEBUG
+kind: ConfigMap
+metadata:
+  name: springboot-keycloak
