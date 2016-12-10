@@ -15,12 +15,14 @@
   <!-- simple controller -->
   <script type="text/javascript">
 
-        angular.module("app",[]).controller("home", function($http,$location) {
+        angular.module("app",[]).controller("home", function($http,$location,$window) {
             var self = this;
 
             $http.post("/user").success(function(data){
-                self.user = data.userAuthentication.details.name;
-                self.authenticated=true;
+                if(data.userAuthentication) {
+                  self.user = data.userAuthentication.details.name;
+                  self.authenticated=true;
+                }
             }).error(function(data) {
                 self.user = "N.A";
                 self.authenticated=false;
@@ -28,8 +30,11 @@
 
             self.logout = function(){
                 $http.post('/logout',{}).success(function() {
-                    self.authenticated = false;
-                    $location.path("/");
+                   var redirectUri = $location.protocol()+"://"+
+                   $location.host()+':'+$location.port()+"/";
+                   $window.location.href = 'http://@keycloak.host@:@keycloak.port@/auth/realms'+
+                      '/@keycloak.realm@/protocol/openid-connect/logout'+'?redirect_uri='+redirectUri;
+                   self.authenticated= false;
                 }).error(function(data) {
                 console.log("Logout failed");
                 self.authenticated= false;
@@ -63,6 +68,7 @@
         <a href="#" ng-click="home.logout()" class="btn btn-info btn-sm">
           <span class="glyphicon glyphicon-log-out"></span> Log out
         </a>
+        <a href="#" ng-click="home.logout()"><span class="glyphicon glyphicon-log-out"></span></a></p>
     </div><!--/.navbar-collapse -->
   </div>
 </nav> l

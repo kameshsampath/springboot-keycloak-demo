@@ -27,10 +27,91 @@
     <bootstrap.version>3.2.0</bootstrap.version>
     <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
     <fabric8-maven-plugin.version>3.2.1</fabric8-maven-plugin.version>
+    <fabric8-arquillian.version>2.2.176</fabric8-arquillian.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>fabric8-arquillian</artifactId>
+        <version>${fabric8-arquillian.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <delimiters>@</delimiters>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+    </plugins>
+  </build>
 
   <profiles>
+
+    <profile>
+      <id>local</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <!-- Application properties-->
+        <keycloak.host>localhost</keycloak.host>
+        <keycloak.port>8180</keycloak.port>
+        <keycloak.realm>springboot</keycloak.realm>
+        <keycloak.client.id>springboot-local</keycloak.client.id>
+        <keycloak.client.secret>e6526cb3-b588-44da-966e-ac0e1d7a586b</keycloak.client.secret>
+      </properties>
+      <build>
+        <defaultGoal>clean spring-boot:run</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-local-app-yml</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>add-resource</goal>
+                </goals>
+                <configuration>
+                  <resources>
+                    <resource>
+                      <directory>src/main/local-resources</directory>
+                      <targetPath>${project.build.outputDirectory}</targetPath>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <profile>
       <id>kit</id>
       <activation/>
@@ -48,6 +129,45 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>fabric8</id>
+      <activation/>
+      <properties>
+        <!-- Application properties-->
+        <keycloak.host>localhost</keycloak.host>
+        <keycloak.port>8180</keycloak.port>
+        <keycloak.realm>springboot</keycloak.realm>
+      </properties>
+      <build>
+        <defaultGoal>clean install</defaultGoal>
+        <resources>
+          <resource>
+            <directory>src/main/fabric8</directory>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>${fabric8-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>fmp</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                  <goal>helm</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
   <dependencies>
@@ -111,42 +231,5 @@
     </dependency>
 
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-arquillian</artifactId>
-        <version>2.2.176</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
-        <version>${fabric8-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>fmp</id>
-            <phase>package</phase>
-            <goals>
-              <goal>resource</goal>
-              <goal>build</goal>
-              <goal>helm</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
 
 </project>
