@@ -28,6 +28,7 @@
     <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
     <fabric8-maven-plugin.version>3.2.1</fabric8-maven-plugin.version>
     <fabric8-arquillian.version>2.2.176</fabric8-arquillian.version>
+    <slf4j-api.version>1.7.21</slf4j-api.version>
   </properties>
 
   <dependencyManagement>
@@ -180,6 +181,23 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-actuator</artifactId>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j-api.version}</version>
     </dependency>
 
     <!-- Spring Security -->

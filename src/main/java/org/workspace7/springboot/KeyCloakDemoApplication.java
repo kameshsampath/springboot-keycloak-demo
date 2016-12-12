@@ -1,5 +1,7 @@
 package org.workspace7.springboot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
@@ -21,6 +23,8 @@ import java.security.Principal;
 @RestController
 public class KeyCloakDemoApplication extends WebSecurityConfigurerAdapter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyCloakDemoApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(KeyCloakDemoApplication.class, args);
     }
@@ -38,9 +42,17 @@ public class KeyCloakDemoApplication extends WebSecurityConfigurerAdapter {
      */
     @RequestMapping(value = "/appConfig", method = RequestMethod.GET)
     public @ResponseBody  AppEnvironment appConfig(HttpServletRequest request) {
+
+        LOGGER.debug("Getting Application Config");
+
         AppEnvironment appEnvironment = new AppEnvironment();
-        appEnvironment.setKeyCloakUrl(System.getProperty("KEYCLOAK_URL") == null ?
-            "http://localhost:8180" : System.getProperty("KEYCLOAK_URL"));
+
+        String kyeCloakUrl = System.getenv("KEYCLOAK_URL");
+        kyeCloakUrl =kyeCloakUrl == null ?"http://localhost:8180" : kyeCloakUrl;
+
+        LOGGER.info("Using Key Cloak URL : {}",kyeCloakUrl);
+
+        appEnvironment.setKeyCloakUrl(kyeCloakUrl);
 
         String redirectUri = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
 
