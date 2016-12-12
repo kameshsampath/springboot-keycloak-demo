@@ -31,7 +31,7 @@ project directory as $KEYCLOAK_SERVER_HOME.
 Form the $KEYCLOAK_SERVER_HOME run the following command,
 
 ```code bash
-mvn clean install fabric8:deploy
+mvn -Pfabric8 clean install fabric8:deploy
 ```
 
 This command will deploy the Keycloak server and import the realms form project
