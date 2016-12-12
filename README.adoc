@@ -1,0 +1,82 @@
+= Spring Boot OAuth2 with Keycloak
+
+This demo is a reconfiguration or migration of https://spring.io/guides/tutorials/spring-boot-oauth2/[Spring Boot and OAuth2]
+to use http://www.keycloak.org[Keycloak] as Authentication Provider in place of Facebook that was used in
+the tutorial.
+
+== Setup
+
+The demo uses the https://fabric8.io[fabric8] with https://github.com/kubernetes/minikube[minikube] to deploy the
+Kubernetes resources, you can also use https://github.com/minishift/minishift[MiniShift]
+or https://developers.redhat.com/products/cdk/overview/[RHEL CDK] to deploy the application. Choosing your deployment
+platform does not need any change to your code as https://fabric8.io[fabric8] does the right deployment thats suitable
+for your platform.
+
+== Let's get started
+
+To deploy applications we will be using the https://maven.fabric8.io[fabric8 maven plugin]. If you have not setup gofabric8
+please refer http://fabric8.io/guide/getStarted/index.html[here] on how to set it up.
+
+IMPORTANT: Please setup https://github.com/kubernetes/minikube[minikube] or  https://github.com/minishift/minishift[MiniShift]
+or https://developers.redhat.com/products/cdk/overview/[RHEL CDK] up and running before proceeding further
+
+=== Setup Keycloak
+
+Clone the keycloak-demo-server setup from https://github.com/kameshsampath/keycloak-demo-server[github], lets call the
+project directory as $KEYCLOAK_SERVER_HOME.
+
+[[keycloak-install]]
+==== Deploy Keycloak
+
+Form the $KEYCLOAK_SERVER_HOME run the following command,
+
+```code bash
+mvn clean install fabric8:deploy
+```
+
+This command will deploy the Keycloak server and import the realms form project
+https://github.com/kameshsampath/keycloak-demo-server/tree/master/src/main/resources[folder] in to Keycloak.
+
+To verify deployment and know the Keycloak url please execute the command,
+
+[[keycloak-url]]
+==== Keycloak URL
+```code bash
+gofabric8 service keycloak-demo-server --url
+```
+
+[[admin-credentials]]
+==== Keycloak Admin Credentials
+The default Keycloak admin credentials `admin` and `admin`, you can change this via https://github.com/kameshsampath/keycloak-demo-server/blob/master/pom.xml[pom.xml]
+properties `keycloak.admin.user` and `keycloak.admin.password` before doing the <<keycloak-install>>.
+
+=== Deploy the Application
+
+Clone the keycloak-demo-server setup from https://github.com/kameshsampath/springboot-keycloak-demo[github], lets call the
+project directory as $DEMO_APP_HOME.
+
+[[demo-install]]
+==== Deploy Keycloak
+
+Form the $DEMO_APP_HOME run the following command,
+
+```code bash
+mvn clean install fabric8:deploy
+```
+
+To verify deployment and know the Application url please execute the command,
+
+[[demo-url]]
+==== Application URL
+```code bash
+gofabric8 service springboot-keycloak-demo --url
+```
+
+You can use the demo users found https://github.com/kameshsampath/keycloak-demo-server#keycloak-realm-resources[here]
+to login to the demo application
+
+=== Configure the Keycloak Client
+
+The demo realms imported into the Keycloak are configured with mock client url typically `http://localhost:8080` which
+needs to be updated to point to the <<demo-url, client url>>, to do that login into <<keycloak-url,Keycloak>> with
+<<admin-credentials>> and update the `spring-boot-demos` client with right application urls from <<demo-url, client url>>
