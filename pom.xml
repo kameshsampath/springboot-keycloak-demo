@@ -155,7 +155,7 @@
             <executions>
               <execution>
                 <id>fmp</id>
-                <phase>package</phase>
+                <phase>install</phase>
                 <goals>
                   <goal>resource</goal>
                   <goal>build</goal>

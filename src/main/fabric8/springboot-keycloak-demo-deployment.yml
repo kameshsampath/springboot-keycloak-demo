@@ -13,6 +13,11 @@ spec:
             secretKeyRef:
               key: "clientSecret"
               name: "springboot-kc-client"
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              key: "keycloak-demo-server--root-url"
+              name: "keycloak-demo-server"
         - name: SPRING_CONFIG_LOCATION
           value: "/config/application.yml"
         volumeMounts:

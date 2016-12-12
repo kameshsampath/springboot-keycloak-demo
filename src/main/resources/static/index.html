@@ -29,16 +29,24 @@
             });
 
             self.logout = function(){
-                $http.post('/logout',{}).success(function() {
-                   var redirectUri = $location.protocol()+"://"+
-                   $location.host()+':'+$location.port()+"/";
-                   $window.location.href = 'http://@keycloak.host@:@keycloak.port@/auth/realms'+
-                      '/@keycloak.realm@/protocol/openid-connect/logout'+'?redirect_uri='+redirectUri;
-                   self.authenticated= false;
+
+                $http.get('/appConfig',{}).success(function(data){
+                  var keyCloakUrl = data.keyCloakUrl;
+                  var redirectUri = data.redirectUri;
+                  $http.post('/logout',{}).success(function() {
+                     $window.location.href = keyCloakUrl+'/auth/realms'+
+                        '/@keycloak.realm@/protocol/openid-connect/logout'+'?redirect_uri='+redirectUri;
+                     self.authenticated= false;
+                  }).error(function(data) {
+                    console.log("Logout failed");
+                    self.authenticated= false;
+                  });
+
                 }).error(function(data) {
-                console.log("Logout failed");
-                self.authenticated= false;
+                  console.log("Unable to get application config");
                 });
+
+
             };
         });
   </script>
@@ -68,7 +76,6 @@
         <a href="#" ng-click="home.logout()" class="btn btn-info btn-sm">
           <span class="glyphicon glyphicon-log-out"></span> Log out
         </a>
-        <a href="#" ng-click="home.logout()"><span class="glyphicon glyphicon-log-out"></span></a></p>
     </div><!--/.navbar-collapse -->
   </div>
 </nav> l

@@ -8,8 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 
@@ -28,10 +31,27 @@ public class KeyCloakDemoApplication extends WebSecurityConfigurerAdapter {
         return principal;
     }
 
+    /**
+     * FIXME: make this as authorized
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/appConfig", method = RequestMethod.GET)
+    public @ResponseBody  AppEnvironment appConfig(HttpServletRequest request) {
+        AppEnvironment appEnvironment = new AppEnvironment();
+        appEnvironment.setKeyCloakUrl(System.getProperty("KEYCLOAK_URL") == null ?
+            "http://localhost:8180" : System.getProperty("KEYCLOAK_URL"));
+
+        String redirectUri = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+
+        appEnvironment.setRedirectUri(redirectUri);
+        return appEnvironment;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .antMatcher("/**").authorizeRequests().antMatchers("/", "/login/**", "/webjars/**")
+            .antMatcher("/**").authorizeRequests().antMatchers("/","/appConfig", "/login/**", "/webjars/**")
             .permitAll().anyRequest()
             .authenticated().and().exceptionHandling()
             .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
